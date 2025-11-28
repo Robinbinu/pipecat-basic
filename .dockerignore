@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.env.*
+.venv/
+venv/
+ENV/
+
+# Build and tooling artifacts
+build/
+dist/
+site-packages/
+node_modules/
+*.log
+uv.lock
+
+# Version control
+.git
+.gitignore
+
+# OS files
+.DS_Store
