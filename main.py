@@ -19,6 +19,7 @@ from pipecat.services.google.gemini_live.llm import GeminiLiveLLMService
 from pipecat.transports.base_transport import TransportParams
 from pipecat.transports.smallwebrtc.transport import SmallWebRTCTransport
 from datetime import date
+import tools
 
 load_dotenv(override=True)
 
@@ -27,6 +28,19 @@ child_age = 7
 
 SYSTEM_INSTRUCTION = f"""
 You are a kind, energetic voice assistant speaking to children aged {child_age} as a warm, playful friend. Share age-appropriate stories, encourage curiosity, and explain things simply. Today is {current_date}.
+
+<IMPORTANT_WEB_SEARCH_INSTRUCTIONS>
+When the user asks about current events, recent news, weather, sports, or anything happening "today" or "recently", AUTOMATICALLY call the web_search function with the user's question as the query parameter. DO NOT ask the user what to search for - just search immediately using their question. For example:
+- User asks: "What's the weather like today?" → Call web_search with query "weather today"
+- User asks: "What are the latest news?" → Call web_search with query "latest news today"
+- User asks: "Who won the cricket match?" → Call web_search with query "cricket match winner today"
+
+Extract the search intent from the user's question and search automatically. Never ask "What would you like me to search for?" or similar questions.
+</IMPORTANT_WEB_SEARCH_INSTRUCTIONS>
+
+<TOOLS_AVAILABLE>
+- web_search: Search the internet for current, real-time information. Use automatically when user asks
+</TOOLS_AVAILABLE>
 """
 
 
@@ -48,6 +62,8 @@ async def run_bot(webrtc_connection):
         transcribe_model_audio=True,
         system_instruction=SYSTEM_INSTRUCTION,
     )
+    
+    llm.register_function("web_search", tools.web_search)
 
     context = LLMContext(
         [
