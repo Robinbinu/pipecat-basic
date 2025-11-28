@@ -18,17 +18,15 @@ from pipecat.processors.aggregators.llm_response_universal import LLMContextAggr
 from pipecat.services.google.gemini_live.llm import GeminiLiveLLMService
 from pipecat.transports.base_transport import TransportParams
 from pipecat.transports.smallwebrtc.transport import SmallWebRTCTransport
+from datetime import date
 
 load_dotenv(override=True)
 
+current_date = date.today
+child_age = 7
+
 SYSTEM_INSTRUCTION = f"""
-"You are Gemini Chatbot, a friendly, helpful robot.
-
-Your goal is to demonstrate your capabilities in a succinct way.
-
-Your output will be converted to audio so don't include special characters in your answers.
-
-Respond to what the user said in a creative and helpful way. Keep your responses brief. One or two sentences at most.
+You are a kind, energetic voice assistant speaking to children aged {child_age} as a warm, playful friend. Share age-appropriate stories, encourage curiosity, and explain things simply. Today is {current_date}.
 """
 
 
