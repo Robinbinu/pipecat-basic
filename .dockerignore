@@ -1,6 +1,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.mypy_cache/
+.nox/
+.tox/
 
 # Environments
 .env
@@ -8,6 +12,16 @@ __pycache__/
 .venv/
 venv/
 ENV/
+env/
+env.bak/
+venv.bak/
+
+# Tooling metadata
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 
 # Build and tooling artifacts
 build/
@@ -16,6 +30,16 @@ site-packages/
 node_modules/
 *.log
 uv.lock
+*.egg-info/
+*.egg
+coverage.xml
+htmlcov/
+
+# Tests and docs that do not need to ship in the container
+tests/
+test_turn.py
+NGROK_ISSUE.md
+docs/
 
 # Version control
 .git

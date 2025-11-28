@@ -23,6 +23,30 @@
 
         let connected = false
         let peerConnection = null
+        const defaultIceConfig = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] }
+        let cachedIceConfig = null
+
+        const getIceConfig = async () => {
+            if (cachedIceConfig) {
+                return cachedIceConfig
+            }
+            try {
+                const response = await fetch('/api/config')
+                if (!response.ok) {
+                    throw new Error(`Failed to load ICE config: ${response.status}`)
+                }
+                const payload = await response.json()
+                if (Array.isArray(payload?.iceServers) && payload.iceServers.length) {
+                    cachedIceConfig = { iceServers: payload.iceServers }
+                } else {
+                    cachedIceConfig = defaultIceConfig
+                }
+            } catch (error) {
+                console.error('Unable to fetch ICE config, falling back to defaults', error)
+                cachedIceConfig = defaultIceConfig
+            }
+            return cachedIceConfig
+        }
 
         const sendIceCandidate = async (pc, candidate) => {
             await fetch('/api/offer', {
@@ -39,15 +63,9 @@
             });
         };
 
-        const createSmallWebRTCConnection = async (audioTrack) => {
-            const config = {
-              iceServers:[
-                {
-                  urls:"stun:stun.l.google.com:19302",
-                }
-              ]
-            };
-            const pc = new RTCPeerConnection(config)
+                const createSmallWebRTCConnection = async (audioTrack) => {
+                        const config = await getIceConfig()
+                        const pc = new RTCPeerConnection(config)
             
             // Queue to store ICE candidates until we have received the answer and have a session in progress
             pc.pendingIceCandidates = []

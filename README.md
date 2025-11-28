@@ -12,7 +12,13 @@ Create a `.env` file (or define environment variables in your shell/host) with:
 
 ```
 GOOGLE_API_KEY=your-key-here
+STUN_URL=stun:stun.l.google.com:19302
+TURN_SERVER_URL=turn:35.209.150.55:3478
+TURN_USERNAME=adiiva
+TURN_PASSWORD=gugubabajuju
 ```
+
+The backend and browser client both read these variables at runtime, so you only need to update `.env` to change ICE servers.
 
 ### Local development
 
@@ -45,7 +51,7 @@ Railway automatically detects `railway.toml` and builds with the included `Docke
 3. Set the required env var: `railway variables set GOOGLE_API_KEY=...`.
 4. Deploy: `railway up`.
 
-Railway injects the `PORT` variable; the container command will bind to `0.0.0.0:${PORT}` automatically.
+Railway injects the `PORT` variable; the server now reads it at startup and the Docker image exposes a health check on `/` so Railway can verify the service is ready.
 
 ### Useful commands
 
