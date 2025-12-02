@@ -5,5 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "deepgram-sdk==4.7.0",
+    "openai>=2.8.1",
+    "openai-guardrails>=0.1.7",
     "pipecat>=0.3.0",
+    "pipecat-ai>=0.0.96",
+    "transformers>=4.57.3",
 ]

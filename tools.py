@@ -2,7 +2,9 @@ import os
 from  loguru import logger
 from openai import OpenAI
 from pipecat.services.llm_service import FunctionCallParams
+from dotenv import load_dotenv
 
+load_dotenv()
 
 async def web_search(params: FunctionCallParams):
     """

@@ -21,9 +21,14 @@ from pipecat.transports.smallwebrtc.transport import SmallWebRTCTransport
 from datetime import date
 import tools
 
+from pipecat.services.groq.llm import GroqLLMService
+from pipecat.services.groq.stt import GroqSTTService
+from pipecat.services.elevenlabs.stt import ElevenLabsRealtimeSTTService
+from pipecat.services.elevenlabs.tts import ElevenLabsTTSService
+
 load_dotenv(override=True)
 
-current_date = date.today
+current_date = date.today()
 child_age = 7
 
 SYSTEM_INSTRUCTION = f"""
@@ -55,12 +60,19 @@ async def run_bot(webrtc_connection):
         ),
     )
 
-    llm = GeminiLiveLLMService(
-        api_key=os.getenv("GOOGLE_API_KEY"),
-        voice_id="Puck",  # Aoede, Charon, Fenrir, Kore, Puck
-        transcribe_user_audio=True,
-        transcribe_model_audio=True,
-        system_instruction=SYSTEM_INSTRUCTION,
+    # llm = GeminiLiveLLMService(
+    #     api_key=os.getenv("GOOGLE_API_KEY"),
+    #     model="gemini-live-2.5-flash-preview",
+    #     voice_id="Puck",  # Aoede, Charon, Fenrir, Kore, Puck
+    #     transcribe_user_audio=True,
+    #     transcribe_model_audio=True,
+    #     system_instruction=SYSTEM_INSTRUCTION,
+    # )
+    stt = GroqSTTService(api_key=os.getenv("GROQ_API_KEY"))
+    llm = GroqLLMService(api_key=os.getenv("GROQ_API_KEY"))
+    tts = ElevenLabsTTSService(
+        api_key=os.getenv("ELEVENLABS_API_KEY", ""),
+        voice_id=os.getenv("ELEVENLABS_VOICE_ID", "mCQMfsqGDT6IDkEKR20a"),
     )
     
     llm.register_function("web_search", tools.web_search)
@@ -69,7 +81,7 @@ async def run_bot(webrtc_connection):
         [
             {
                 "role": "user",
-                "content": "Start by greeting the user warmly and introducing yourself.",
+                "content": "Start by greeting the user warmly and introducing yourself. tell the user the weather in Bangalore by using the web search tool"
             }
         ],
     )
@@ -78,8 +90,10 @@ async def run_bot(webrtc_connection):
     pipeline = Pipeline(
         [
             pipecat_transport.input(),
+            stt, # STT
             context_aggregator.user(),
             llm,  # LLM
+            tts,  # TTS
             pipecat_transport.output(),
             context_aggregator.assistant(),
         ]
